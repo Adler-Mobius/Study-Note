@@ -1,0 +1,406 @@
+<div align="center">
+
+# 利用Git与GitHub在VS Code上进行版本管理
+
+</div>
+
+## 前言
+
+**版本管理**的本质是利用工具（比如*Git*）记录每次你写完退出IDE时保存的代码，以便日后**追溯**与**修复**程序出现的漏洞或冲突。
+
+**版本管理**多应用于团队的项目管理，可以让项目的开发更加**秩序**和**高效**。例如**程序员A**负责编写项目里的图像处理部分，**程序员B**负责编写项目里的路径处理部分，然后**程序员A**和**程序员B**则在完成编写后提交比如基于*v1.0*版本的*v1.1Beta*，交由**软件工程师C**来审批两个提交的内容后，根据两者的代码质量和冲突程度决定是否将两个提交合并为正式版本*v1.1*并发布
+
+上述操作可以在以下情形起到至关重要的作用：某天在发布了*v2.0*版本后，用户登陆软件后突然崩溃，导致用户无法正常使用该软件。此时运维部门就会马上把服务器回滚到***Git*里上一个提交的稳定版本**，然后等待技术部门修复好新版本后再进行发布。如果只是出现了并不严重的=错误，那么就只需要技术部门**利用*Git*创建一个*Hotfix*分支**进行热修复，后续开发部门利用用户的崩溃日志来**对*Git*上提交的版本逐个进行测试**，来查出是哪一次提交导致的崩溃，最后总结复盘防止漏洞复发
+
+若此时没有先前所做的版本管理，就只能让软件完全停运直到修好，然后在庞大的项目里先寻找到上一次修改的地方，再然后才能进行针对性的修复
+
+了解这些，你就基本了解了版本管理的意义所在了，那么接下来我们开始实操
+
+## 快速开始
+
+使用*VS Code*和*GitHub*远程仓库演示：
+
+### 第一步：选择/新建一个项目文件夹
+
+**新建*VS Code*窗口**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26-10-19-45.png)
+
+**选择侧边栏第一个*资源管理器***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_10-25-20.png)
+
+**点击 *打开文件夹* 选择/新建项目文件夹**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_10-28-36.png)
+
+**选择/新建项目文件夹后打开进入到下一步**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_10-29-19.png)
+
+### 第二步：下载Git（macOS无需手动下载）
+
+**点击侧边栏里的 *源代码管理（Source Control）* 或者使用 *Ctrl + Shift + G* 呼出**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_01-04-07.png)
+
+**弹出的边栏如果系统识别到Git已经安装则会显示*初始化仓库*：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_01-02-31.png)
+
+**识别到未安装则会是如下情形：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_00-12-16.png)
+
+**点击 *Download Git for Windows* 则会提示跳转到Git的下载页面：**
+
+[Git官网下载链接](https://git-scm.com/install/windows)
+
+选择*Open*
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_00-15-26.png)
+
+根据自己的系统选择下载版本
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_00-19-23.png)
+
+**下载后找到安装包：**
+
+> 安装包（截止2026.4.26最新版为2.54.0）
+> 
+> ![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_00-23-18.png)
+
+**根据安装指引进行默认配置直到出现 *Choocing the default editor used by Git*：**
+
+选*Use Visual Studio Code as Git's default editor*
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_00-37-51.png)
+
+**和*Adjusting the name of the inital branch in new repositories*：**
+
+选*Override the default branch name for new repositories*并默认为*main*
+
+**然后后面的选项保持默认即可**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_00-43-48.png)
+
+> 注意：如果安装完成后弹出一个终端窗口，直接关掉即可
+
+**回到 *VS Code* 选择 *源代码管理***
+
+如果显示 *初始化仓库* 则说明下载成功可以进入下一步
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_01-02-31.png)
+
+### 第二步：进行Git的基本配置
+
+**选择窗口右上角中间的*切换面板* 图标**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_10-51-39.png)
+
+**选择*终端*：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_10-55-11.png)
+
+**输入：**
+
+```bash
+git config --global user.name "你的名字"
+git config --global user.email "你的邮箱"
+```
+
+> 注意：这里的用户名和邮箱最好与你后面将要用来注册GitHub账户的用户名和邮箱保持一致
+
+**完成后进入下一步**
+
+### 第三步：初始化本地Git仓库
+
+**选择*初始化仓库***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_01-02-31.png)
+
+**如果侧边栏内容变成了这样：**
+
+那么本地仓库的初始化就成功了
+
+> 注意：在图片里面的***更改***一栏下，如果你创建/选择的项目文件夹里没有东西任何文件***更改***下就是**空的**。
+> 
+> 这里的演示图片是因为选择了内含文件的的项目文件夹，所以***更改***一栏下是有东西的
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_01-09-12.png)
+
+### 第四步：基本的提交和修改提交操作
+
+**在初始化仓库后，可以往你的项目文件夹里写一点东西**
+
+比如像我现在写的Markdown笔记：
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_11-30-11.png)
+
+**现在就可以看到*更改*一栏出现了你刚才写入的文件：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_11-34-29.png)
+
+**然后在 *提交* 上面的 *消息* 中填入你的 *版本信息* ，比如：**
+
+> ***版本信息***中，我们一般：
+>
+> ***版本号（v1.0）*** 则根据团队的**开发习惯来**进行命名就好
+> 
+> 用 ***“feat（feature）”*** 来表示**新增**的部分
+> 
+> 用 ***“fix”*** 来表示**修改/修复**的部分
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_11-39-38.png)
+
+**点击*提交*后会弹出一个这个窗口：**
+
+建议选 ***始终***，这样以后的每次提交就都不用再手动进行一次 ***暂存*** 操作了
+
+> *暂存* 操作是指把你的更改再确认一次，把更改从类似于“缓冲区”的地方放入“提交区”，本意是为了多一次核查操作
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_11-40-56.png)
+
+**然后就可以看到下面的*图形*一栏多了个节点：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_12-23-41.png)
+
+---
+
+**至此，基本的提交操作已经完成。但是又有时我们不免遇到 *少提交了一些文件和更改* 也就是 *遗漏更改* 的情况**
+
+**那么就需要用 *提交（修改）* 的操作进行补救了**
+
+**比如我这里发现*v1.0*里少提交了 *“Snipaste_11-40”* 和 *“Snipaste_12-23”*：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_12-34-19.png)
+
+**点击*提交*右边的展开图标：**
+
+选择***提交（修改）***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_12-34-36.png)
+
+**然后会跳出这么个标签页（COMMIT_EDITMSG）：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_12-34-57.png)
+
+**选择右下角的*接受提交消息*：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_12-38-00.png)
+
+**然后你就可以看到 *“Snipaste_11-40”* 和 *“Snipaste_12-23”* 被成功添加到了上一次 *v1.0*的提交里了**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_12-40-29.png)
+
+**再提交一个新的更改就该进入下一步*远程库的使用* 了**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-02-38.png)
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-02-52.png)
+
+### 第五步：远程库的创建
+
+**首先，你要使用 *默认浏览器* 注册一个*GitHub*账户**
+
+[GitHub官网链接](https://github.com/)
+
+> 注意：
+> 
+> 1. 登入官网需要使用 ***“上网工具”***
+>
+> 2. 具体的注册步骤请根据***官网指引*** 或 ***自行搜索教程***
+> 
+> 3. 若不使用 ***默认浏览器*** 登陆，后续使用 ***VS Code*** 获取***GitHub*** 授权时可能会出现问题
+>
+> 4. 新账户一定要在注册后 ***45天内*** 进行 ***2FA身份验证***，否则账户可能会被 ***标记*** 导致 ***无法正常使用***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26-13-15-30.png)
+
+**注册完后回到*VS Code***
+
+点击***发布Branch***：
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-27-58.png)
+
+**如果是第一次操作的话会显示弹窗：**
+
+让你从 ***VS Code*** 跳转到 ***默认浏览器*** 授权 ***GitHub***
+
+直接选择 *允许（Allow）* 跳转授权即可
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-27-09.png)
+
+> tips: 
+> 
+> 因为我的VS Code已经授权了自己的GitHub账户不会显示此页面，故这里使用网上的跳转页面图片，所以显示的不是我的用户名。
+
+**选择*Continue***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-55-39.png)
+
+**选择 *Authorize Visual-Studio-Code***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_14-01-00.png)
+
+**授权完成后，会跳转回*VS Code*，并在顶部显示以下提示：**
+
+- 输入栏可以编辑你的储存库的名称（像我这里改为了*Study-Note*，默认的名称是你的项目文件夹的名称）
+
+- 下面两个选项分别是 ***公开至私人仓库（第一个）*** 和 ***公开至公共仓库（第二个）***
+
+> 我们通常公开至***私人仓库***，因为***公共仓库*** 可能会收到他人的 ***PR申请*** 甚至遭到他人的 ***恶意攻击***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-30-12.png)
+
+**编辑和配置完远程库设置后按回车确定，然后等待远程库创建完成**
+
+远程库正在创建时会有以下提示：
+
+> 注意：若这两个地方一直加载，请检查 ***网络*** 和 ***“上网工具”***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-31-04.png)
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-30-41.png)
+
+**创建成功会有以下变化：**
+
+- 节点旁出现绿色的<span style="color:#7ad88f;">云朵图标</span>：
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-32-26.png)
+
+- 右下角显示创建成功的消息
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_13-32-10.png)
+
+**选择 *在 GitHub 上打开* 则会跳转到这个页面，这时我们就能发现账户里多了名为*Study-Note*的库：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_14-37-05.png)
+
+**至此，我们的远程库算是创建成功了，接下来开始学习下一步：*远程库的相关协作操作***
+
+### 第六步：远程库的相关协作操作
+
+#### 1. 同步更改（拉取）
+
+> 注意：最好要养成在 ***编写前*** 和 ***推送前*** 进行 ***拉取*** 的习惯，这样可以很大程度上避免与其他队友的提交产生严重冲突
+
+**点击*图形*里的这个图标：**
+
+如果没有新的提交则不会有变化
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_11-48-24.png)
+
+**而当检测到有新的提交的话 *图形* 就会变成下面这样：**
+
+可以发现分支上多了一个<span style="color:#7ad88f;">***传入的更改***</span>
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_12-11-15.png)
+
+**点击 *同步更改***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_12-11-34.png)
+
+**选择 *确定***
+
+注意检查自己有没有 ***未推送*** 的提交
+
+> 如果有的话请不要拉取，先将自己修改的部分备份好之后，对刚才进行了修改的文件进行 ***放弃更改*** 操作：
+>
+> ![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_12-27-49.png)
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_12-11-53.png)
+
+**确定后图标开始旋转……**
+
+> 注意：如果这里图标一直加载，请尝试用浏览器直接访问GitHub，通过能否访问GitHub页面判断是否为网络问题
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_13-27-05.png)
+
+**同步成功后可以发现第372行多了一个“来自队友的更改”：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_12-17-29.png)
+
+#### 2. 同步更改（推送）
+
+在新添加了一些项目文件并进行 ***提交*** 后，我们可以发现侧边栏变成了这样：
+
+- 原来还是本地库时提交完成后显示的 ***发布Branch*** 变成了 ***同步更改***：
+
+- 下面 ***图形*** 里的分支也有了些许改变
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_14-52-45.png)
+
+> 可以看到，***分支*** 变成了 <span style="color:#948ae3;">***紫色***</span> 和 <span style="color:#7ad88f;">***绿色***</span> 两种颜色，这里 <span style="color:#948ae3;">***紫色***</span> 表示的是 ***本地*** <span style="color:#948ae3;">***未同步***</span> 至 ***远程库*** 的更改，而 <span style="color:#7ad88f;">***绿色***</span> 则表示的是 ***远程库*** <span style="color:#7ad88f;">***已同步***</span> 至 ***本地*** 的更改
+
+**点击*同步更改（推送）***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-28_22-22-29.png)
+
+**选择*确定***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-28_22-05-53.png)
+
+> 这里不建议选择 ***确定，且不再显示*** 是因为 ***同步更改（推送）*** 的操作完成后，同步上去的内容不能像本地库一样可以简单、直接地修改
+> 
+> 除非是推送后能在 ***非常短的时间内*** 发现有遗漏的更改并补交，否则在协作时 ***容易覆盖*** 别人提交的更改
+>
+> 保留这个提示弹窗，不仅可以避免误触，也可以让你在同步前多一点考虑的时间，复盘一下自己是否还有未完成的修改
+
+**确定后等待同步……**
+
+> 注意：如果一直加载，请检查网络
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-28_22-06-17.png)
+
+ **同步成功后，可以看到<span style="color:#7ad88f;">云朵图标</span>出现到了我们新节点的旁边：**
+
+ ![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-28_22-06-46.png)
+
+ 在GitHub里也可以看到我们刚才的提交了：
+
+ ![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-28_22-39-33.png)
+ 
+ ![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-28_22-07-43.png)
+
+#### 3. 补交更改
+
+**如果真的在同步后发现不小心遗漏的更改，请按照以下操作补交：**
+
+> 注意：以下操作仅建议在 ***个人库（例如用来同步多设备之间的开发进度的库）*** 同步后发现有遗漏的情况下进行。且最好 ***不要在有多人协作的库里擅自进行***，如果实在需要补交，一定要 ***通知队友*** ，否则会出现重大事故
+
+- 补上遗漏的更改后选择***提交（修改）***
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_12-34-36.png)
+
+- **选择标签页（COMMIT_EDITMSG）右下角的*接受提交消息*：**
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-26_12-38-00.png)
+
+- 此时分支图形变成了这样：
+ 
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-28_22-16-10.png)
+ 
+- 然后在 ***终端*** 输入以下指令后回车：
+
+```bash
+git push --force-with-lease origin main
+```
+
+> 如果出现类似以下两者的报错，请尝试用浏览器直接访问GitHub，通过能否访问GitHub页面判断是否为网络问题：
+>
+> ![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_09-53-41.png)
+
+- 操作成功后终端会有如下返回：
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-29_10-11-59.png)
+
+- 然后就可以看到分支图形合并了：
+
+![alt text](https://raw.githubusercontent.com/Adler-Mobius/Study-Note/main/picture/Snipaste_2026-04-28_22-06-46.png)
+
+## 总结
+
+掌握以上操作，就完全能够进行小型的、3-5人规模的 ***模块分工式*** 的项目开发了。但是如果要进行大规模的、20+人规模的***内部模块互相牵连*** 的项目开发，则需要掌握 ***PR（拉取请求）*** 的使用，而且团队内部的职能划分会更加精细。感兴趣的同学可以自行了解
+
+最后，关于如何利用Git与GitHub在VS Code上进行版本管理的教学就到此结束了，***谢谢大家***
